@@ -11,8 +11,7 @@ class SaveProduct implements Contracts\SavesProduct
         Product $product,
         array $data,
         ?UploadedFile $image = null,
-    ): Product
-    {
+    ): Product {
         $product->fill($data);
 
         if ($image instanceof UploadedFile) {

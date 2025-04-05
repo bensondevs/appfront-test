@@ -3,11 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Actions\Product\Contracts\SavesProduct;
-use Illuminate\Console\Command;
 use App\Models\Product;
-use Illuminate\Support\Facades\Validator;
-use App\Jobs\SendPriceChangeNotification;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Console\Command;
 
 class UpdateProduct extends Command
 {
@@ -37,9 +34,6 @@ class UpdateProduct extends Command
 
     /**
      * Execute the console command.
-     *
-     * @param SavesProduct $savesProduct
-     * @return int
      */
     public function handle(SavesProduct $savesProduct): int
     {
@@ -60,12 +54,14 @@ class UpdateProduct extends Command
         if (isset($data['name'])) {
             $name = trim($data['name']);
             if ($name === '') {
-                $this->error("Name cannot be empty.");
+                $this->error('Name cannot be empty.');
+
                 return 1;
             }
 
             if (strlen($name) < 3) {
-                $this->error("Name must be at least 3 characters long.");
+                $this->error('Name must be at least 3 characters long.');
+
                 return 1;
             }
             $data['name'] = $name;
@@ -74,12 +70,13 @@ class UpdateProduct extends Command
         $oldPrice = $product->price;
 
         if (empty($data)) {
-            $this->info("No changes provided. Product remains unchanged.");
+            $this->info('No changes provided. Product remains unchanged.');
+
             return 0;
         }
 
         $updatedProduct = $savesProduct($product, $data);
-        $this->info("Product updated successfully.");
+        $this->info('Product updated successfully.');
 
         $newPrice = $updatedProduct->price;
         if (isset($data['price']) && $oldPrice != $newPrice) {

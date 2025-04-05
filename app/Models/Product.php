@@ -30,27 +30,23 @@ class Product extends Model
     /**
      * Set image from file request.
      *
-     * @param UploadedFile $image
-     * @return void
      *
      * @TODO Refactor this into storage based upload and drop `image` database column
      */
     public function setImageFromFileRequest(UploadedFile $image): void
     {
-        $filename = now()->timestamp . '-' . $image->getClientOriginalName();
+        $filename = now()->timestamp.'-'.$image->getClientOriginalName();
 
         $directoryName = self::IMAGE_DIRECTORY_NAME;
 
         $folderPath = public_path($directoryName);
         $image->move($folderPath, $filename);
 
-        $this->image = $directoryName . '/' . $filename;
+        $this->image = $directoryName.'/'.$filename;
     }
 
     /**
      * Get image path of the product.
-     *
-     * @return string
      */
     public function getImage(): string
     {
@@ -64,17 +60,14 @@ class Product extends Model
 
     /**
      * Get price of the product.
-     *
-     * @param Currency $currency
-     * @return string
      */
     public function getPrice(Currency $currency = Currency::USD): string
     {
         $price = $this->price;
 
         return match (true) {
-            $currency->isEUR() => '€' . number_format($price * ExchangeRate::getUsdToEurRate(), 2),
-            default => '$' . number_format($price, 2),
+            $currency->isEUR() => '€'.number_format($price * ExchangeRate::getUsdToEurRate(), 2),
+            default => '$'.number_format($price, 2),
         };
     }
 

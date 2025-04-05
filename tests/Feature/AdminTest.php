@@ -107,7 +107,7 @@ class AdminTest extends TestCase
         ]);
 
         $product->refresh();
-        $this->assertTrue(str($product->getImage())->endsWith('-' . $fileName));
+        $this->assertTrue(str($product->getImage())->endsWith('-'.$fileName));
 
         Bus::assertDispatched(SendPriceChangeNotification::class);
     }

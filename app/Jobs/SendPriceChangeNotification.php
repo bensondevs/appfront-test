@@ -21,15 +21,11 @@ class SendPriceChangeNotification implements ShouldQueue
      */
     public function __construct(
         protected Product $product,
-        protected float   $oldPrice,
-    )
-    {
-    }
+        protected float $oldPrice,
+    ) {}
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function handle(): void
     {

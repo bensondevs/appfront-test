@@ -23,8 +23,6 @@ trait HasProduct
 
     /**
      * Get product data without image.
-     *
-     * @return array
      */
     public function productData(): array
     {

@@ -6,19 +6,19 @@ use App\Actions\Product\Contracts\SavesProduct;
 use App\Http\Requests\Admin\LoginRequest;
 use App\Http\Requests\Admin\Product\AddProductRequest;
 use App\Http\Requests\Admin\Product\UpdateProductRequest;
+use App\Models\Product;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Product;
 
 /**
  * @see \Tests\Feature\AdminTest
  */
 class AdminController extends Controller
 {
-    public function loginPage(): View | Application | Factory
+    public function loginPage(): View|Application|Factory
     {
         return view('login');
     }
@@ -39,14 +39,14 @@ class AdminController extends Controller
         return redirect()->route('login');
     }
 
-    public function products(): View | Application | Factory
+    public function products(): View|Application|Factory
     {
         $products = Product::all();
 
         return view('admin.products', compact('products'));
     }
 
-    public function editProduct(Product $product): View | Application | Factory
+    public function editProduct(Product $product): View|Application|Factory
     {
         return view('admin.edit_product', compact('product'));
     }
@@ -76,7 +76,7 @@ class AdminController extends Controller
             ->with('success', 'Product deleted successfully');
     }
 
-    public function addProductForm(): View | Application | Factory
+    public function addProductForm(): View|Application|Factory
     {
         return view('admin.add_product');
     }
@@ -84,10 +84,9 @@ class AdminController extends Controller
     public function addProduct(
         AddProductRequest $request,
         SavesProduct $savesProduct,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $savesProduct(
-            new Product(),
+            new Product,
             $request->productData(),
             $request->file('image'),
         );

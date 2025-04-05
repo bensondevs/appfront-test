@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
+use App\Models\Product;
 use App\Support\ExchangeRate;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
-use App\Models\Product;
 
 /**
  * @see \Tests\Feature\ProductTest
  */
 class ProductController extends Controller
 {
-    public function index(): View | Application | Factory
+    public function index(): View|Application|Factory
     {
         $products = ProductResource::collection(Product::all());
         $exchangeRate = ExchangeRate::getUsdToEurRate();
@@ -25,7 +25,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function show(Product $product): View | Application | Factory
+    public function show(Product $product): View|Application|Factory
     {
         $exchangeRate = ExchangeRate::getUsdToEurRate();
 

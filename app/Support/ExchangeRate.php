@@ -24,7 +24,8 @@ class ExchangeRate
 
                 return $data['rates']['EUR'] ?? $fallbackRate;
             } catch (\Exception $e) {
-                Log::error('Exchange rate fetch failed: ' . $e->getMessage());
+                Log::error('Exchange rate fetch failed: '.$e->getMessage());
+
                 return $fallbackRate;
             }
         });
