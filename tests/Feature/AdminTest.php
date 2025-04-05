@@ -6,6 +6,7 @@ use App\Jobs\SendPriceChangeNotification;
 use App\Models\Product;
 use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
 
@@ -56,7 +57,7 @@ class AdminTest extends TestCase
 
         $this->assertAuthenticatedAs($user);
 
-        $response = $this->get('/logout');
+        $response = $this->post('/logout');
         $response->assertRedirectToRoute('login');
         $this->assertGuest();
     }
@@ -96,6 +97,7 @@ class AdminTest extends TestCase
             'name' => 'Updated Name',
             'description' => 'Updated Description',
             'price' => 150,
+            'image' => UploadedFile::fake()->image($fileName = 'image.jpg'),
         ]);
 
         $response->assertRedirectToRoute('admin.products');
@@ -103,6 +105,9 @@ class AdminTest extends TestCase
             'id' => $product->getKey(),
             'price' => 150,
         ]);
+
+        $product->refresh();
+        $this->assertTrue(str($product->getImage())->endsWith('-' . $fileName));
 
         Bus::assertDispatched(SendPriceChangeNotification::class);
     }

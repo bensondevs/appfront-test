@@ -35,4 +35,7 @@ return [
         ],
     ],
 
+    'product' => [
+        'price-notification-email' => env('PRICE_NOTIFICATION_EMAIL', 'admin@example.com'),
+    ],
 ];
