@@ -28,13 +28,6 @@ class AdminTest extends TestCase
     {
         $user = UserFactory::new()->create();
 
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
-        $response->assertRedirectToRoute('admin.products');
-        $this->assertAuthenticated();
-
         $invalidResponse = $this->post('/login', [
             'email' => 'something@email.com',
             'password' => 'password',
@@ -47,6 +40,13 @@ class AdminTest extends TestCase
         ]);
         $sqlInjectionResponse->assertRedirect();
         $this->assertGuest();
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+        $response->assertRedirectToRoute('admin.products');
+        $this->assertAuthenticated();
     }
 
     public function test_logout(): void
@@ -56,7 +56,7 @@ class AdminTest extends TestCase
 
         $this->assertAuthenticatedAs($user);
 
-        $response = $this->post('/logout');
+        $response = $this->get('/logout');
         $response->assertRedirectToRoute('login');
         $this->assertGuest();
     }
@@ -65,6 +65,7 @@ class AdminTest extends TestCase
     {
         Product::factory()->count($count = rand(3, 5))->create();
 
+        $this->actingAs(UserFactory::new()->create());
         $response = $this->get('/admin/products');
 
         $response->assertStatus(200);
@@ -76,7 +77,8 @@ class AdminTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->get("/admin/products/{$product->id}/edit");
+        $this->actingAs(UserFactory::new()->create());
+        $response = $this->get("/admin/products/edit/{$product->getKey()}");
 
         $response->assertStatus(200);
         $response->assertViewIs('admin.edit_product');
@@ -87,9 +89,10 @@ class AdminTest extends TestCase
     {
         Bus::fake();
 
+        $this->actingAs(UserFactory::new()->create());
         $product = Product::factory()->create(['price' => 100]);
 
-        $response = $this->put("/admin/products/{$product->getKey()}", [
+        $response = $this->put("/admin/products/edit/{$product->getKey()}", [
             'name' => 'Updated Name',
             'description' => 'Updated Description',
             'price' => 150,
@@ -108,7 +111,8 @@ class AdminTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->delete("/admin/products/{$product->getKey()}");
+        $this->actingAs(UserFactory::new()->create());
+        $response = $this->delete("/admin/products/delete/{$product->getKey()}");
 
         $response->assertRedirectToRoute('admin.products');
         $this->assertDatabaseMissing('products', ['id' => $product->getKey()]);
@@ -116,7 +120,8 @@ class AdminTest extends TestCase
 
     public function test_add_product_form(): void
     {
-        $response = $this->get('/admin/products/create');
+        $this->actingAs(UserFactory::new()->create());
+        $response = $this->get('/admin/products/add');
 
         $response->assertOk();
         $response->assertViewIs('admin.add_product');
@@ -124,7 +129,8 @@ class AdminTest extends TestCase
 
     public function test_add_product(): void
     {
-        $response = $this->post('/admin/products', [
+        $this->actingAs(UserFactory::new()->create());
+        $response = $this->post('/admin/products/add', [
             'name' => $name = fake()->words(asText: true),
             'description' => $description = fake()->text(),
             'price' => $price = fake()->randomFloat(2, 100, 1000),
