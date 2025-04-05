@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\Currency;
 use App\Observers\ProductObserver;
+use App\Support\ExchangeRate;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -58,5 +60,26 @@ class Product extends Model
         return file_exists($imageDirectory) && getimagesize($imageDirectory)
             ? $image
             : 'product-placeholder.jpg';
+    }
+
+    /**
+     * Get price of the product.
+     *
+     * @param Currency $currency
+     * @return string
+     */
+    public function getPrice(Currency $currency = Currency::USD): string
+    {
+        $price = $this->price;
+
+        return match (true) {
+            $currency->isEUR() => '€' . number_format($price * ExchangeRate::getUsdToEurRate(), 2),
+            default => '$' . number_format($price, 2),
+        };
+    }
+
+    public function getEuroPrice(): string
+    {
+        return $this->getPrice(Currency::EUR);
     }
 }

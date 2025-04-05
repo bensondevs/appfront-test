@@ -38,4 +38,10 @@ return [
     'product' => [
         'price-notification-email' => env('PRICE_NOTIFICATION_EMAIL', 'admin@example.com'),
     ],
+
+    'exchange_rate' => [
+        'api_url' => 'https://open.er-api.com/v6/latest/USD',
+        'fallback_exchange_rate' => env('EXCHANGE_RATE', 0.85),
+        'cache_ttl' => env('EXCHANGE_RATE_CACHE_TTL', 300), // in seconds
+    ],
 ];
