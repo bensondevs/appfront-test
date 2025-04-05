@@ -112,7 +112,7 @@ class AdminTest extends TestCase
         Bus::assertDispatched(SendPriceChangeNotification::class);
     }
 
-    public function test_delete_product_removes_it_and_redirects(): void
+    public function test_delete_product(): void
     {
         $product = Product::factory()->create();
 
