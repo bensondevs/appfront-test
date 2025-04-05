@@ -17,7 +17,6 @@ class PriceChangeNotification extends Mailable
     public function __construct(
         protected Product $product,
         protected float $oldPrice,
-        protected float $newPrice,
     ) {}
 
     /**
@@ -29,6 +28,9 @@ class PriceChangeNotification extends Mailable
     {
         return $this
             ->subject('Product Price Change Notification')
-            ->view('emails.price-change');
+            ->view('emails.price-change', [
+                'product' => $this->product,
+                'oldPrice' => $this->oldPrice,
+            ]);
     }
 }

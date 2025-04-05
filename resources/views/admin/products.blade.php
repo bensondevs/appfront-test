@@ -1,4 +1,19 @@
 <x-layouts.admin title="Admin - Products">
+    <div class="admin-header">
+        <h1>Admin - Products</h1>
+        <div>
+            <a href="{{ route('admin.add.product') }}" class="btn btn-primary">Add New Product</a>
+
+            <form action="{{ route('logout') }}"
+                  method="POST"
+                  style="display: inline;"
+            >
+                @csrf
+                <button type="submit" class="btn btn-secondary">Logout</button>
+            </form>
+        </div>
+    </div>
+
     @if(session('success'))
         <div class="success-message">
             {{ session('success') }}
@@ -16,7 +31,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($products as $product)
+        @foreach ($products as $product)
             <tr>
                 <td>{{ $product->getKey() }}</td>
                 <td>
@@ -26,7 +41,7 @@
                          alt="{{ $product->name }}">
                 </td>
                 <td>{{ $product->name }}</td>
-                <td>${{ number_format($product->price, 2) }}</td>
+                <td>{{ $product->getPrice() }}</td>
                 <td>
                     <a href="{{ route('admin.edit.product', ['product' => $product]) }}" class="btn btn-primary">
                         Edit
