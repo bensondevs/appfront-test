@@ -9,6 +9,9 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use App\Models\Product;
 
+/**
+ * @see \Tests\Feature\ProductTest
+ */
 class ProductController extends Controller
 {
     public function index(): View | Application | Factory
