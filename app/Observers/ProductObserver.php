@@ -19,7 +19,6 @@ class ProductObserver
                 SendPriceChangeNotification::dispatch(
                     $product,
                     $product->getOriginal('price'),
-                    $product->price,
                 );
             } catch (\Exception $exception) {
                 Log::error('Failed to dispatch price change notification: ' . $exception->getMessage());

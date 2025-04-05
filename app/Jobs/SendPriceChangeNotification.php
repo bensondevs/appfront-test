@@ -22,7 +22,6 @@ class SendPriceChangeNotification implements ShouldQueue
     public function __construct(
         protected Product $product,
         protected float   $oldPrice,
-        protected float   $newPrice,
     )
     {
     }
@@ -36,8 +35,7 @@ class SendPriceChangeNotification implements ShouldQueue
     {
         Mail::to(config('services.product.price-notification-email'))->send(new PriceChangeNotification(
             $this->product,
-            $this->oldPrice,
-            $this->newPrice
+            $this->oldPrice
         ));
     }
 }
