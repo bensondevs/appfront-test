@@ -11,7 +11,7 @@ class SaveProduct implements Contracts\SavesProduct
         Product $product,
         array $data,
         ?UploadedFile $image = null,
-    ): void
+    ): Product
     {
         $product->fill($data);
 
@@ -20,5 +20,7 @@ class SaveProduct implements Contracts\SavesProduct
         }
 
         $product->save();
+
+        return $product;
     }
 }

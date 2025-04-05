@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Product\Contracts\SavesProduct;
 use Illuminate\Console\Command;
 use App\Models\Product;
 use Illuminate\Support\Facades\Validator;
@@ -37,61 +38,52 @@ class UpdateProduct extends Command
     /**
      * Execute the console command.
      *
+     * @param SavesProduct $savesProduct
      * @return int
      */
-    public function handle()
+    public function handle(SavesProduct $savesProduct): int
     {
-        $id = $this->argument('id');
-        $product = Product::find($id);
+        $product = Product::query()->find($this->argument('id'));
 
-        $data = [];
-        if ($this->option('name')) {
-            $data['name'] = $this->option('name');
-            if (empty($data['name']) || trim($data['name']) == '') {
+        if (! $product instanceof Product) {
+            $this->error('Product not found!');
+
+            return 1;
+        }
+
+        $data = collect([
+            'name' => $this->option('name'),
+            'description' => $this->option('description'),
+            'price' => $this->option('price'),
+        ])->filter(fn ($value) => ! is_null($value))->all();
+
+        if (isset($data['name'])) {
+            $name = trim($data['name']);
+            if ($name === '') {
                 $this->error("Name cannot be empty.");
                 return 1;
             }
-            if (strlen($data['name']) < 3) {
+
+            if (strlen($name) < 3) {
                 $this->error("Name must be at least 3 characters long.");
                 return 1;
             }
+            $data['name'] = $name;
         }
-        if ($this->option('description')) {
-            $data['description'] = $this->option('description');
-        }
-        if ($this->option('price')) {
-            $data['price'] = $this->option('price');
-        }
-
 
         $oldPrice = $product->price;
 
-        if (!empty($data)) {
-            $product->update($data);
-            $product->save();
-
-            $this->info("Product updated successfully.");
-
-            // Check if price has changed
-            if (isset($data['price']) && $oldPrice != $product->price) {
-                $this->info("Price changed from {$oldPrice} to {$product->price}.");
-
-                $notificationEmail = env('PRICE_NOTIFICATION_EMAIL', 'admin@example.com');
-
-                try {
-                    SendPriceChangeNotification::dispatch(
-                        $product,
-                        $oldPrice,
-                        $product->price,
-                        $notificationEmail
-                    );
-                    $this->info("Price change notification dispatched to {$notificationEmail}.");
-                } catch (\Exception $e) {
-                    $this->error("Failed to dispatch price change notification: " . $e->getMessage());
-                }
-            }
-        } else {
+        if (empty($data)) {
             $this->info("No changes provided. Product remains unchanged.");
+            return 0;
+        }
+
+        $updatedProduct = $savesProduct($product, $data);
+        $this->info("Product updated successfully.");
+
+        $newPrice = $updatedProduct->price;
+        if (isset($data['price']) && $oldPrice != $newPrice) {
+            $this->info("Price changed from {$oldPrice} to {$newPrice}.");
         }
 
         return 0;

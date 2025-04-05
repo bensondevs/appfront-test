@@ -11,5 +11,5 @@ interface SavesProduct
         Product       $product,
         array         $data,
         ?UploadedFile $image = null,
-    ): void;
+    ): Product;
 }
